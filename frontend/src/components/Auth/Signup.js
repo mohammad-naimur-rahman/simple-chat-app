@@ -1,13 +1,26 @@
-import { Button, FormControl, FormLabel, Input, InputGroup, InputRightElement, VStack } from '@chakra-ui/react'
+import {
+  Button,
+  FormControl,
+  FormLabel,
+  Input,
+  InputGroup,
+  InputRightElement,
+  useToast,
+  VStack,
+} from '@chakra-ui/react'
 import React, { useState } from 'react'
+import { API_URL } from '../../configs'
+import Cookies from 'js-cookie'
 
 const Signup = () => {
+  const toast = useToast()
   const [formData, setformData] = useState({
     name: '',
     email: '',
     password: '',
     confirmPassword: '',
   })
+  const [imgUrl, setimgUrl] = useState('')
 
   const [showPassword, setshowPassword] = useState(false)
   const [imgUploading, setimgUploading] = useState(false)
@@ -16,13 +29,108 @@ const Signup = () => {
     setformData({ ...formData, [e.target.name]: e.target.value })
   }
 
-  const uploadImage = file => {
-    console.log(file)
+  const uploadImage = async file => {
+    const url = `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`
+
+    if (file === undefined) {
+      toast({
+        title: 'No file selected',
+        status: 'warning',
+        duration: 3000,
+        isClosable: true,
+        position: 'bottom',
+      })
+      return
+    }
+
+    if (file.type === 'image/jpeg' || file.type === 'image/png') {
+      const formData = new FormData()
+      formData.append('file', file)
+      formData.append('upload_preset', process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET)
+
+      try {
+        setimgUploading(true)
+        const res = await fetch(url, {
+          method: 'POST',
+          body: formData,
+        })
+        const data = await res.json()
+        setimgUploading(false)
+        toast({
+          title: 'Image upload completed!',
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+          position: 'bottom',
+        })
+        setimgUrl(data.url.toString())
+      } catch (error) {
+        setimgUploading(false)
+        console.log(error)
+        toast({
+          title: 'Error uploading image',
+          status: 'warning',
+          duration: 3000,
+          isClosable: true,
+          position: 'bottom',
+        })
+      }
+    }
   }
 
-  const signup = e => {
+  const signup = async e => {
     e.preventDefault()
-    console.log(formData)
+
+    if (formData.password !== formData.confirmPassword) {
+      toast({
+        title: 'Passwords do not match',
+        status: 'warning',
+        duration: 3000,
+        isClosable: true,
+        position: 'bottom',
+      })
+      return
+    }
+
+    try {
+      const res = await fetch(`${API_URL}/user`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ...formData, pic: imgUrl }),
+      })
+      const data = await res.json()
+
+      if (data.token) {
+        toast({
+          title: 'Signup successful!',
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+          position: 'bottom',
+        })
+
+        Cookies.set('token', data.token, { expires: 30 })
+      } else {
+        toast({
+          title: data.message,
+          status: 'error',
+          duration: 3000,
+          isClosable: true,
+          position: 'bottom',
+        })
+      }
+    } catch (error) {
+      console.log(error)
+      toast({
+        title: 'Something went wrong!',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+        position: 'bottom',
+      })
+    }
   }
 
   return (

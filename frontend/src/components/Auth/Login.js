@@ -22,7 +22,7 @@ const Login = () => {
   return (
     <VStack spacing='10px'>
       <form onSubmit={login}>
-        <FormControl id='email' isRequired>
+        <FormControl id='loginEmail' isRequired>
           <FormLabel>Email Address</FormLabel>
           <Input
             value={formData.email}
@@ -32,7 +32,7 @@ const Login = () => {
             onChange={updateForm}
           />
         </FormControl>
-        <FormControl id='password' isRequired>
+        <FormControl id='loginPassword' isRequired>
           <FormLabel>Password</FormLabel>
           <InputGroup size='md'>
             <Input
