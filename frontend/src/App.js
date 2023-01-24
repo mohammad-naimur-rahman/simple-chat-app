@@ -5,10 +5,12 @@ import Homepage from './pages/Homepage'
 
 function App() {
   return (
-    <Switch>
-      <Route path='/' exact component={Homepage} />
-      <Route path='/chats' component={ChatPage} />
-    </Switch>
+    <div className='App'>
+      <Switch>
+        <Route path='/' exact component={Homepage} />
+        <Route path='/chats' component={ChatPage} />
+      </Switch>
+    </div>
   )
 }
 
