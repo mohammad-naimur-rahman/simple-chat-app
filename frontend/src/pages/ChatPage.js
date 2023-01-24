@@ -1,21 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
+import { Helmet } from 'react-helmet'
 
 const ChatPage = () => {
   const [chats, setchats] = useState([])
-  const fetchChats = async () => {
-    const { data } = await axios.get('/api/chat')
-    setchats(data)
-  }
 
-  useEffect(() => {
-    fetchChats()
-  }, [])
   return (
     <div>
-      {chats.map(ch => (
-        <div key={ch._id}>{ch.chatName}</div>
-      ))}
+      <Helmet>
+        <title>Chats | Chat App</title>
+      </Helmet>
+      <h1>Hello</h1>
     </div>
   )
 }

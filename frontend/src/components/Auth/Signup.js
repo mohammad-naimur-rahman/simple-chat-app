@@ -8,11 +8,13 @@ import {
   useToast,
   VStack,
 } from '@chakra-ui/react'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { API_URL } from '../../configs'
 import Cookies from 'js-cookie'
+import { useHistory } from 'react-router-dom'
 
 const Signup = () => {
+  const { push } = useHistory()
   const toast = useToast()
   const initFormData = {
     name: '',
@@ -123,6 +125,7 @@ const Signup = () => {
           }),
           { expires: 30 }
         )
+        push('/chats')
       } else {
         toast({
           title: data.message,
@@ -143,6 +146,12 @@ const Signup = () => {
       })
     }
   }
+
+  useEffect(() => {
+    if (Cookies.get('token')) {
+      push('/chats')
+    }
+  }, [push])
 
   return (
     <VStack spacing='5px'>

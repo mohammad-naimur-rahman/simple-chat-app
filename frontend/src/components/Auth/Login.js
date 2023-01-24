@@ -9,10 +9,12 @@ import {
   VStack,
 } from '@chakra-ui/react'
 import Cookies from 'js-cookie'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { useHistory } from 'react-router-dom'
 import { API_URL } from '../../configs'
 
 const Login = () => {
+  const { push } = useHistory()
   const initFormData = {
     email: '',
     password: '',
@@ -64,6 +66,7 @@ const Login = () => {
           }),
           { expires: 30 }
         )
+        push('/chats')
       } else {
         setloading(false)
         toast({
@@ -86,6 +89,12 @@ const Login = () => {
       })
     }
   }
+
+  useEffect(() => {
+    if (Cookies.get('token')) {
+      push('/chats')
+    }
+  }, [push])
 
   return (
     <VStack spacing='10px'>
