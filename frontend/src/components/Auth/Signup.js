@@ -113,6 +113,16 @@ const Signup = () => {
         })
 
         Cookies.set('token', data.token, { expires: 30 })
+        Cookies.set(
+          'user',
+          JSON.stringify({
+            _id: data._id,
+            name: data.name,
+            email: data.email,
+            pic: data.pic,
+          }),
+          { expires: 30 }
+        )
       } else {
         toast({
           title: data.message,

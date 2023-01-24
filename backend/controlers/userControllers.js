@@ -7,7 +7,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
   if (!name || !email || !password) {
     res.status(400)
-    throw new Error('Please fill all fields')
+    throw new Error('Please Enter all the Feilds')
   }
 
   const userExists = await User.findOne({ email })
@@ -17,7 +17,7 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new Error('User already exists')
   }
 
-  const user = User.create({
+  const user = await User.create({
     name,
     email,
     password,
@@ -29,14 +29,13 @@ const registerUser = asyncHandler(async (req, res) => {
       _id: user._id,
       name: user.name,
       email: user.email,
+      isAdmin: user.isAdmin,
+      pic: user.pic,
       token: generateToken(user._id),
     })
   } else {
-    res.status(400).json({
-      success: false,
-      message: 'User already exists',
-    })
-    throw new Error('Failed to create new user')
+    res.status(400)
+    throw new Error('User not found')
   }
 })
 
