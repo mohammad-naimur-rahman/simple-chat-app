@@ -1,11 +1,24 @@
-import { Button, FormControl, FormLabel, Input, InputGroup, InputRightElement, VStack } from '@chakra-ui/react'
+import {
+  Button,
+  FormControl,
+  FormLabel,
+  Input,
+  InputGroup,
+  InputRightElement,
+  useToast,
+  VStack,
+} from '@chakra-ui/react'
+import Cookies from 'js-cookie'
 import React, { useState } from 'react'
+import { API_URL } from '../../configs'
 
 const Login = () => {
-  const [formData, setformData] = useState({
+  const initFormData = {
     email: '',
     password: '',
-  })
+  }
+  const toast = useToast()
+  const [formData, setformData] = useState(initFormData)
   const [showPassword, setshowPassword] = useState(false)
 
   const [loading, setloading] = useState(false)
@@ -14,14 +27,59 @@ const Login = () => {
     setformData({ ...formData, [e.target.name]: e.target.value })
   }
 
-  const login = e => {
+  const loginUser = async e => {
     e.preventDefault()
-    console.log(formData)
+
+    try {
+      setloading(true)
+      const res = await fetch(`${API_URL}/user/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ...formData }),
+      })
+      const data = await res.json()
+      setloading(false)
+
+      setformData(initFormData)
+
+      if (data.token) {
+        toast({
+          title: 'Login successful!',
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+          position: 'bottom',
+        })
+
+        Cookies.set('token', data.token, { expires: 30 })
+      } else {
+        setloading(false)
+        toast({
+          title: data.message,
+          status: 'error',
+          duration: 3000,
+          isClosable: true,
+          position: 'bottom',
+        })
+      }
+    } catch (error) {
+      setloading(false)
+      console.log(error)
+      toast({
+        title: 'Something went wrong!',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+        position: 'bottom',
+      })
+    }
   }
 
   return (
     <VStack spacing='10px'>
-      <form onSubmit={login}>
+      <form onSubmit={loginUser}>
         <FormControl id='loginEmail' isRequired>
           <FormLabel>Email Address</FormLabel>
           <Input
@@ -49,12 +107,11 @@ const Login = () => {
             </InputRightElement>
           </InputGroup>
         </FormControl>
-        <Button colorScheme='blue' width='100%' style={{ marginTop: 15 }} isLoading={loading}>
+        <Button colorScheme='blue' type='submit' width='100%' style={{ marginTop: 15 }} isLoading={loading}>
           Login
         </Button>
         <Button
           variant='solid'
-          type='submit'
           colorScheme='red'
           width='100%'
           mt={2}

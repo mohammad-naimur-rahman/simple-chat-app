@@ -14,12 +14,13 @@ import Cookies from 'js-cookie'
 
 const Signup = () => {
   const toast = useToast()
-  const [formData, setformData] = useState({
+  const initFormData = {
     name: '',
     email: '',
     password: '',
     confirmPassword: '',
-  })
+  }
+  const [formData, setformData] = useState(initFormData)
   const [imgUrl, setimgUrl] = useState('')
 
   const [showPassword, setshowPassword] = useState(false)
@@ -101,7 +102,7 @@ const Signup = () => {
         body: JSON.stringify({ ...formData, pic: imgUrl }),
       })
       const data = await res.json()
-
+      setformData(initFormData)
       if (data.token) {
         toast({
           title: 'Signup successful!',
