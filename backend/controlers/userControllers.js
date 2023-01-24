@@ -29,13 +29,41 @@ const registerUser = asyncHandler(async (req, res) => {
       _id: user._id,
       name: user.name,
       email: user.email,
-      pic: user.pic,
       token: generateToken(user._id),
     })
   } else {
-    res.status(400)
+    res.status(400).json({
+      success: false,
+      message: 'User already exists',
+    })
     throw new Error('Failed to create new user')
   }
 })
 
-module.exports = { registerUser }
+const authUser = asyncHandler(async (req, res) => {
+  const { email, password } = req.body
+
+  if (!email || !password) {
+    res.status(400)
+    throw new Error('Please fill all fields')
+  }
+
+  const user = await User.findOne({
+    email,
+  })
+
+  if (user && (await user.matchPassword(password))) {
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      isAdmin: user.isAdmin,
+      token: generateToken(user._id),
+    })
+  } else {
+    res.status(401)
+    throw new Error('Invalid email or password')
+  }
+})
+
+module.exports = { registerUser, authUser }
