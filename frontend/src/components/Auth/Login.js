@@ -10,11 +10,14 @@ import {
 } from '@chakra-ui/react'
 import Cookies from 'js-cookie'
 import React, { useEffect, useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useHistory, useLocation } from 'react-router-dom'
 import { API_URL } from '../../configs'
 
 const Login = () => {
-  const { push } = useHistory()
+  const { push, replace } = useHistory()
+  const location = useLocation()
+
+  let { from } = location.state || { from: { pathname: '/' } }
   const initFormData = {
     email: '',
     password: '',
@@ -66,7 +69,7 @@ const Login = () => {
           }),
           { expires: 30 }
         )
-        push('/chats')
+        replace(from)
       } else {
         setloading(false)
         toast({
