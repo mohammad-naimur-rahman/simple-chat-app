@@ -7,60 +7,60 @@ import {
   InputRightElement,
   useToast,
   VStack,
-} from '@chakra-ui/react'
-import Cookies from 'js-cookie'
-import React, { useEffect, useState } from 'react'
-import { useHistory, useLocation } from 'react-router-dom'
-import { API_URL } from '../../configs'
+} from "@chakra-ui/react";
+import Cookies from "js-cookie";
+import React, { useEffect, useState } from "react";
+import { useHistory, useLocation } from "react-router-dom";
+import { API_URL } from "../../configs";
 
 const Login = () => {
-  const { push, replace } = useHistory()
-  const location = useLocation()
+  const { push, replace } = useHistory();
+  const location = useLocation();
 
-  let { from } = location.state || { from: { pathname: '/' } }
+  let { from } = location.state || { from: { pathname: "/" } };
   const initFormData = {
-    email: '',
-    password: '',
-  }
-  const toast = useToast()
-  const [formData, setformData] = useState(initFormData)
-  const [showPassword, setshowPassword] = useState(false)
+    email: "",
+    password: "",
+  };
+  const toast = useToast();
+  const [formData, setformData] = useState(initFormData);
+  const [showPassword, setshowPassword] = useState(false);
 
-  const [loading, setloading] = useState(false)
+  const [loading, setloading] = useState(false);
 
-  const updateForm = e => {
-    setformData({ ...formData, [e.target.name]: e.target.value })
-  }
+  const updateForm = (e) => {
+    setformData({ ...formData, [e.target.name]: e.target.value });
+  };
 
-  const loginUser = async e => {
-    e.preventDefault()
+  const loginUser = async (e) => {
+    e.preventDefault();
 
     try {
-      setloading(true)
+      setloading(true);
       const res = await fetch(`${API_URL}/user/login`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ ...formData }),
-      })
-      const data = await res.json()
-      setloading(false)
+      });
+      const data = await res.json();
+      setloading(false);
 
-      setformData(initFormData)
+      setformData(initFormData);
 
       if (data.token) {
         toast({
-          title: 'Login successful!',
-          status: 'success',
+          title: "Login successful!",
+          status: "success",
           duration: 3000,
           isClosable: true,
-          position: 'bottom',
-        })
+          position: "bottom",
+        });
 
-        Cookies.set('token', data.token, { expires: 30 })
+        Cookies.set("token", data.token, { expires: 30 });
         Cookies.set(
-          'user',
+          "user",
           JSON.stringify({
             _id: data._id,
             name: data.name,
@@ -68,86 +68,97 @@ const Login = () => {
             pic: data.pic,
           }),
           { expires: 30 }
-        )
-        replace(from)
+        );
+        replace(from);
       } else {
-        setloading(false)
+        setloading(false);
         toast({
           title: data.message,
-          status: 'error',
+          status: "error",
           duration: 3000,
           isClosable: true,
-          position: 'bottom',
-        })
+          position: "bottom",
+        });
       }
     } catch (error) {
-      setloading(false)
-      console.log(error)
+      setloading(false);
+      console.log(error);
       toast({
-        title: 'Something went wrong!',
-        status: 'error',
+        title: "Something went wrong!",
+        status: "error",
         duration: 3000,
         isClosable: true,
-        position: 'bottom',
-      })
+        position: "bottom",
+      });
     }
-  }
+  };
 
   useEffect(() => {
-    if (Cookies.get('token')) {
-      push('/chats')
+    if (Cookies.get("token")) {
+      push("/chats");
     }
-  }, [push])
+  }, [push]);
 
   return (
-    <VStack spacing='10px'>
+    <VStack spacing="10px">
       <form onSubmit={loginUser}>
-        <FormControl id='loginEmail' isRequired>
+        <FormControl id="loginEmail" isRequired>
           <FormLabel>Email Address</FormLabel>
           <Input
             value={formData.email}
-            type='email'
-            name='email'
-            placeholder='Enter Your Email Address'
+            type="email"
+            name="email"
+            placeholder="Enter Your Email Address"
             onChange={updateForm}
           />
         </FormControl>
-        <FormControl id='loginPassword' isRequired>
+        <FormControl id="loginPassword" isRequired>
           <FormLabel>Password</FormLabel>
-          <InputGroup size='md'>
+          <InputGroup size="md">
             <Input
               value={formData.password}
-              name='password'
+              name="password"
               onChange={updateForm}
-              type={showPassword ? 'text' : 'password'}
-              placeholder='Enter password'
+              type={showPassword ? "text" : "password"}
+              placeholder="Enter password"
             />
-            <InputRightElement width='4.5rem'>
-              <Button h='1.75rem' size='sm' onClick={() => setshowPassword(prev => !prev)}>
-                {showPassword ? 'Hide' : 'Show'}
+            <InputRightElement width="4.5rem">
+              <Button
+                h="1.75rem"
+                size="sm"
+                onClick={() => setshowPassword((prev) => !prev)}
+              >
+                {showPassword ? "Hide" : "Show"}
               </Button>
             </InputRightElement>
           </InputGroup>
         </FormControl>
-        <Button colorScheme='blue' type='submit' width='100%' style={{ marginTop: 15 }} isLoading={loading}>
+        <Button
+          colorScheme="blue"
+          type="submit"
+          width="100%"
+          style={{ marginTop: 15 }}
+          isLoading={loading}
+        >
           Login
         </Button>
         <Button
-          variant='solid'
-          colorScheme='red'
-          width='100%'
+          variant="solid"
+          colorScheme="red"
+          width="100%"
           mt={2}
           onClick={() => {
             setformData({
-              email: 'guest@example.com',
-              password: '123456',
-            })
-          }}>
+              email: "guest@example.com",
+              password: "123456",
+            });
+          }}
+        >
           Get Guest User Credentials
         </Button>
       </form>
     </VStack>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;

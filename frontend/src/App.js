@@ -1,14 +1,14 @@
-import { Route, Switch } from 'react-router-dom'
-import './App.css'
-import ProtectedRoute from './components/Auth/ProtectedRoute'
-import ChatPage from './pages/ChatPage'
-import Homepage from './pages/Homepage'
+import { Route, Switch } from "react-router-dom";
+import "./App.css";
+import ProtectedRoute from "./components/Auth/ProtectedRoute";
+import ChatPage from "./pages/ChatPage";
+import Homepage from "./pages/Homepage";
 
 function App() {
   return (
-    <div className='App'>
+    <div className="App">
       <Switch>
-        <Route path='/' exact>
+        <Route path="/" exact>
           <Homepage />
         </Route>
         <ProtectedRoute>
@@ -16,7 +16,7 @@ function App() {
         </ProtectedRoute>
       </Switch>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
