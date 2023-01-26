@@ -8,7 +8,7 @@ function App() {
   return (
     <div className='App'>
       <Switch>
-        <Route path='/' component={Homepage} exact>
+        <Route path='/' exact>
           <Homepage />
         </Route>
         <ProtectedRoute>
